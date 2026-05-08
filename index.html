@@ -1,0 +1,1171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Medical Clinic Growth System — Meteor Media</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink:       #0b1512;
+    --ink-soft:  #1e2e2b;
+    --forest:    #0d5c4f;
+    --forest-mid:#0f7a67;
+    --forest-lt: #e4f0ed;
+    --sage:      #8aaf9f;
+    --cream:     #f8fbfa;
+    --paper:     #ffffff;
+    --gold:      #d4a83a;
+    --gold-lt:   #f5e9c8;
+    --muted:     #6b8580;
+    --border:    #d0e3df;
+    --shadow-sm: 0 1px 3px rgba(11,21,18,.06), 0 4px 16px rgba(11,21,18,.04);
+    --shadow-md: 0 4px 24px rgba(11,21,18,.09), 0 1px 3px rgba(11,21,18,.05);
+    --shadow-lg: 0 12px 48px rgba(11,21,18,.13), 0 2px 6px rgba(11,21,18,.06);
+    --r-sm: 10px;
+    --r-md: 16px;
+    --r-lg: 24px;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Sora', sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    min-height: 100vh;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── TYPOGRAPHY ── */
+  .display {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 700;
+    line-height: 1.04;
+    letter-spacing: -.015em;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    background: var(--ink);
+    color: white;
+    padding: 80px 32px 72px;
+    position: relative;
+    overflow: hidden;
+    border-top: 1px solid rgba(255,255,255,.05);
+  }
+
+  .hero-mesh {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 55% 90% at 85% 15%, rgba(13,92,79,.6) 0%, transparent 60%),
+      radial-gradient(ellipse 35% 55% at 5% 85%, rgba(13,122,103,.3) 0%, transparent 55%),
+      radial-gradient(ellipse 20% 30% at 50% 100%, rgba(212,168,58,.08) 0%, transparent 50%);
+    pointer-events: none;
+  }
+
+  .hero-mesh::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    opacity: 0.4;
+    pointer-events: none;
+  }
+
+  .hero-inner {
+    position: relative;
+    max-width: 860px;
+    margin: 0 auto;
+  }
+
+  .hero-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 24px;
+  }
+
+  .hero-label::before {
+    content: '';
+    display: block;
+    width: 24px;
+    height: 1px;
+    background: var(--gold);
+    opacity: .6;
+  }
+
+  .hero h1 {
+    font-size: clamp(42px, 6.5vw, 76px);
+    color: #fff;
+    margin-bottom: 22px;
+    max-width: 820px;
+  }
+
+  .hero h1 em {
+    font-style: normal;
+    color: var(--gold);
+    position: relative;
+  }
+
+  .hero-sub {
+    font-size: 16.5px;
+    font-weight: 300;
+    color: rgba(255,255,255,.65);
+    max-width: 520px;
+    line-height: 1.7;
+    margin-bottom: 40px;
+  }
+
+  /* Outcome stat row */
+  .stat-row {
+    display: flex;
+    gap: 0;
+    flex-wrap: wrap;
+    margin-bottom: 36px;
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.09);
+    border-radius: var(--r-lg);
+    max-width: 640px;
+    overflow: hidden;
+    backdrop-filter: blur(8px);
+  }
+
+  .stat {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 28px 28px;
+    flex: 1;
+    position: relative;
+  }
+
+  .stat + .stat::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 16px; bottom: 16px;
+    width: 1px;
+    background: rgba(255,255,255,.09);
+  }
+
+  .stat-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 40px;
+    font-weight: 700;
+    color: var(--gold);
+    line-height: 1;
+    letter-spacing: -.02em;
+  }
+
+  .stat-label {
+    font-size: 10.5px;
+    font-weight: 600;
+    color: rgba(255,255,255,.42);
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    line-height: 1.4;
+  }
+
+  .pill-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .pill {
+    background: rgba(255,255,255,.05);
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 100px;
+    padding: 8px 18px;
+    font-size: 12px;
+    font-weight: 500;
+    color: rgba(255,255,255,.75);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    letter-spacing: .02em;
+    transition: border-color .2s, background .2s;
+  }
+
+  .pill:hover {
+    background: rgba(255,255,255,.09);
+    border-color: rgba(255,255,255,.22);
+  }
+
+  .pill span.dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--gold);
+    flex-shrink: 0;
+  }
+
+  /* ── LAYOUT WRAPPER ── */
+  .wrapper {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+
+  /* ── SECTIONS ── */
+  .section { padding: 72px 0; }
+
+  .section-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    color: var(--forest-mid);
+    margin-bottom: 16px;
+  }
+
+  .section-label::before {
+    content: '';
+    display: block;
+    width: 18px;
+    height: 1.5px;
+    background: var(--forest-mid);
+  }
+
+  .section-title {
+    font-size: clamp(28px, 4vw, 42px);
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 10px;
+    letter-spacing: -.015em;
+    line-height: 1.12;
+  }
+
+  .section-sub {
+    font-size: 15px;
+    font-weight: 300;
+    color: var(--muted);
+    margin-bottom: 40px;
+    max-width: 540px;
+    line-height: 1.68;
+  }
+
+  /* ── DIVIDER ── */
+  .divider {
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--border), transparent);
+    max-width: 980px;
+    margin: 0 auto;
+  }
+
+  /* ── PROOF / SOCIAL PROOF SECTION ── */
+  .proof-section {
+    background: var(--ink);
+    position: relative;
+    overflow: hidden;
+    padding: 80px 0;
+  }
+
+  .proof-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 50% 80% at 10% 50%, rgba(13,92,79,.4) 0%, transparent 55%),
+      radial-gradient(ellipse 30% 50% at 90% 50%, rgba(212,168,58,.06) 0%, transparent 50%);
+    pointer-events: none;
+  }
+
+  .proof-inner { position: relative; }
+
+  .proof-header {
+    text-align: center;
+    margin-bottom: 56px;
+  }
+
+  .proof-header .section-label {
+    color: var(--gold);
+    justify-content: center;
+  }
+
+  .proof-header .section-label::before {
+    background: var(--gold);
+  }
+
+  .proof-header .section-title { color: white; }
+  .proof-header .section-sub { color: rgba(255,255,255,.5); margin: 0 auto; text-align: center; }
+
+  /* Metrics strip */
+  .proof-metrics {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: rgba(255,255,255,.07);
+    border-radius: var(--r-lg);
+    overflow: hidden;
+    margin-bottom: 56px;
+    border: 1px solid rgba(255,255,255,.07);
+  }
+
+  .proof-metric {
+    background: rgba(255,255,255,.025);
+    padding: 32px 28px;
+    text-align: center;
+    position: relative;
+  }
+
+  .proof-metric:hover { background: rgba(255,255,255,.05); }
+
+  .proof-metric-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 52px;
+    font-weight: 700;
+    color: var(--gold);
+    line-height: 1;
+    letter-spacing: -.02em;
+    margin-bottom: 6px;
+  }
+
+  .proof-metric-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: rgba(255,255,255,.45);
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    line-height: 1.4;
+  }
+
+  /* Testimonials grid */
+  .testimonials-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    margin-bottom: 48px;
+  }
+
+  .testimonial-card {
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.09);
+    border-radius: var(--r-md);
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    transition: border-color .25s, background .25s;
+    position: relative;
+  }
+
+  .testimonial-card::before {
+    content: '\201C';
+    position: absolute;
+    top: 16px; right: 22px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 56px;
+    color: var(--gold);
+    opacity: .15;
+    line-height: 1;
+  }
+
+  .testimonial-card:hover {
+    border-color: rgba(255,255,255,.18);
+    background: rgba(255,255,255,.07);
+  }
+
+  .testimonial-stars {
+    display: flex;
+    gap: 3px;
+  }
+
+  .star { color: var(--gold); font-size: 13px; }
+
+  .testimonial-quote {
+    font-size: 13.5px;
+    font-weight: 400;
+    color: rgba(255,255,255,.75);
+    line-height: 1.65;
+    flex: 1;
+  }
+
+  .testimonial-result {
+    background: rgba(212,168,58,.1);
+    border: 1px solid rgba(212,168,58,.2);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gold);
+    letter-spacing: .02em;
+  }
+
+  .testimonial-author {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-top: 4px;
+    border-top: 1px solid rgba(255,255,255,.07);
+  }
+
+  .author-avatar {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--forest) 0%, var(--forest-mid) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    color: white;
+    flex-shrink: 0;
+  }
+
+  .author-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(255,255,255,.85);
+    line-height: 1.3;
+  }
+
+  .author-role {
+    font-size: 11px;
+    color: rgba(255,255,255,.38);
+    font-weight: 400;
+    letter-spacing: .02em;
+  }
+
+  /* Trust logos / badges */
+  .trust-strip {
+    border-top: 1px solid rgba(255,255,255,.07);
+    padding-top: 36px;
+    text-align: center;
+  }
+
+  .trust-strip-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,.28);
+    margin-bottom: 20px;
+  }
+
+  .trust-badges {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 28px;
+    flex-wrap: wrap;
+  }
+
+  .trust-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 100px;
+    padding: 9px 18px;
+    font-size: 11.5px;
+    font-weight: 500;
+    color: rgba(255,255,255,.48);
+    letter-spacing: .02em;
+    white-space: nowrap;
+  }
+
+  .trust-badge .badge-icon { font-size: 14px; }
+
+  /* ── PROBLEM ── */
+  .problem-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    border-radius: var(--r-lg);
+    overflow: hidden;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .problem-row {
+    display: contents;
+  }
+
+  .problem-cell {
+    background: var(--paper);
+    padding: 26px 28px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--ink-soft);
+    border-bottom: 1px solid var(--border);
+    position: relative;
+  }
+
+  .problem-cell:last-child,
+  .problem-cell:nth-last-child(2) {
+    border-bottom: none;
+  }
+
+  .problem-cell.trigger {
+    background: #f0f8f6;
+    font-weight: 600;
+    color: var(--forest);
+    border-right: 1px solid var(--border);
+  }
+
+  .problem-cell.trigger::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--forest-mid);
+  }
+
+  .problem-cell .arrow {
+    color: var(--forest-mid);
+    font-weight: 700;
+    margin-right: 6px;
+    font-size: 15px;
+  }
+
+  .problem-note {
+    margin-top: 18px;
+    font-size: 13.5px;
+    color: var(--muted);
+    font-style: italic;
+    line-height: 1.6;
+  }
+
+  /* ── OUTCOMES ── */
+  .outcomes-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  .outcome-card {
+    background: var(--paper);
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    padding: 30px 26px;
+    position: relative;
+    overflow: hidden;
+    transition: box-shadow .25s, transform .25s, border-color .25s;
+  }
+
+  .outcome-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-3px);
+    border-color: #b8d8d3;
+  }
+
+  .outcome-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--forest), var(--forest-mid));
+  }
+
+  .outcome-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 46px;
+    font-weight: 700;
+    color: var(--forest);
+    line-height: 1;
+    margin-bottom: 8px;
+    letter-spacing: -.02em;
+  }
+
+  .outcome-card h4 {
+    font-size: 14.5px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 9px;
+    line-height: 1.35;
+  }
+
+  .outcome-card p {
+    font-size: 12.5px;
+    color: var(--muted);
+    line-height: 1.62;
+    font-weight: 300;
+  }
+
+  /* ── HOW IT WORKS ── */
+  .steps-bg {
+    background: var(--ink);
+    border-radius: var(--r-lg);
+    padding: 56px 52px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .steps-bg::before {
+    content: '';
+    position: absolute;
+    top: -100px; right: -100px;
+    width: 400px; height: 400px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(13,92,79,.45) 0%, transparent 65%);
+    pointer-events: none;
+  }
+
+  .steps-bg::after {
+    content: '';
+    position: absolute;
+    bottom: -80px; left: -60px;
+    width: 300px; height: 300px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(212,168,58,.06) 0%, transparent 65%);
+    pointer-events: none;
+  }
+
+  .steps-bg .section-label { color: var(--gold); }
+  .steps-bg .section-label::before { background: var(--gold); }
+  .steps-bg .section-title { color: white; }
+  .steps-bg .section-sub { color: rgba(255,255,255,.42); max-width: 100%; }
+
+  .steps-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 22px;
+    position: relative;
+  }
+
+  .step {
+    display: flex;
+    gap: 18px;
+    align-items: flex-start;
+    padding: 20px;
+    border-radius: var(--r-sm);
+    background: rgba(255,255,255,.03);
+    border: 1px solid rgba(255,255,255,.06);
+    transition: background .2s, border-color .2s;
+  }
+
+  .step:hover {
+    background: rgba(255,255,255,.06);
+    border-color: rgba(255,255,255,.12);
+  }
+
+  .step-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--forest-mid);
+    line-height: 1;
+    flex-shrink: 0;
+    width: 44px;
+    opacity: .8;
+    letter-spacing: -.02em;
+  }
+
+  .step-result {
+    font-size: 10.5px;
+    font-weight: 700;
+    color: var(--gold);
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+  }
+
+  .step-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(255,255,255,.9);
+    margin-bottom: 5px;
+    line-height: 1.4;
+  }
+
+  .step-desc {
+    font-size: 12px;
+    color: rgba(255,255,255,.42);
+    line-height: 1.6;
+    font-weight: 300;
+  }
+
+  /* ── CTA BAND ── */
+  .cta-band {
+    background: var(--forest);
+    border-radius: var(--r-lg);
+    padding: 64px 52px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 72px;
+    box-shadow: 0 16px 64px rgba(13,92,79,.3);
+  }
+
+  .cta-band::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 140% at 50% -10%, rgba(255,255,255,.1), transparent 55%),
+      radial-gradient(ellipse 40% 60% at 100% 100%, rgba(0,0,0,.12), transparent 50%);
+    pointer-events: none;
+  }
+
+  .cta-band h2 {
+    font-size: clamp(28px, 4.5vw, 46px);
+    font-weight: 700;
+    color: white;
+    margin-bottom: 14px;
+    position: relative;
+    letter-spacing: -.015em;
+  }
+
+  .cta-promise {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--gold);
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    margin-bottom: 18px;
+    position: relative;
+  }
+
+  .cta-promise::before,
+  .cta-promise::after {
+    content: '';
+    display: block;
+    height: 1px;
+    width: 28px;
+    background: var(--gold);
+    opacity: .5;
+  }
+
+  .cta-band p {
+    font-size: 15px;
+    font-weight: 300;
+    color: rgba(255,255,255,.72);
+    max-width: 420px;
+    margin: 0 auto 36px;
+    line-height: 1.68;
+    position: relative;
+  }
+
+  .cta-contacts {
+    display: flex;
+    gap: 14px;
+    justify-content: center;
+    flex-wrap: wrap;
+    position: relative;
+    margin-bottom: 24px;
+  }
+
+  .cta-btn {
+    background: white;
+    color: var(--forest);
+    font-weight: 700;
+    font-size: 13.5px;
+    border-radius: 100px;
+    padding: 15px 30px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: transform .2s, box-shadow .2s;
+    letter-spacing: .01em;
+    box-shadow: 0 4px 20px rgba(0,0,0,.2);
+  }
+
+  .cta-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 32px rgba(0,0,0,.28);
+  }
+
+  .cta-btn.outline {
+    background: transparent;
+    color: rgba(255,255,255,.9);
+    border: 1.5px solid rgba(255,255,255,.35);
+    box-shadow: none;
+  }
+
+  .cta-btn.outline:hover {
+    border-color: rgba(255,255,255,.7);
+    background: rgba(255,255,255,.07);
+    box-shadow: 0 4px 16px rgba(0,0,0,.15);
+  }
+
+  .cta-fine {
+    font-size: 10.5px;
+    color: rgba(255,255,255,.3);
+    position: relative;
+    letter-spacing: .04em;
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(22px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .hero-inner > * {
+    animation: fadeUp .65s cubic-bezier(.22,1,.36,1) both;
+  }
+  .hero-inner > *:nth-child(1) { animation-delay: .05s; }
+  .hero-inner > *:nth-child(2) { animation-delay: .14s; }
+  .hero-inner > *:nth-child(3) { animation-delay: .22s; }
+  .hero-inner > *:nth-child(4) { animation-delay: .30s; }
+  .hero-inner > *:nth-child(5) { animation-delay: .38s; }
+
+  /* Scroll reveal */
+  .reveal {
+    opacity: 0;
+    transform: translateY(18px);
+    transition: opacity .65s cubic-bezier(.22,1,.36,1), transform .65s cubic-bezier(.22,1,.36,1);
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal-delay-1 { transition-delay: .08s; }
+  .reveal-delay-2 { transition-delay: .16s; }
+  .reveal-delay-3 { transition-delay: .24s; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 720px) {
+    .hero { padding: 52px 20px 44px; }
+    .wrapper { padding: 0 20px; }
+    .stat-row { flex-direction: row; }
+    .stat + .stat::before { display: none; }
+    .stat { padding: 20px 16px; }
+    .stat-num { font-size: 30px; }
+    .steps-bg { padding: 36px 24px; }
+    .steps-list { grid-template-columns: 1fr; }
+    .problem-grid { grid-template-columns: 1fr; }
+    .problem-cell.trigger { border-right: none; border-bottom: 1px solid var(--border); }
+    .outcomes-grid { grid-template-columns: 1fr 1fr; }
+    .cta-band { padding: 44px 24px; }
+    .testimonials-grid { grid-template-columns: 1fr; }
+    .proof-metrics { grid-template-columns: 1fr 1fr; }
+    .trust-badges { gap: 10px; }
+  }
+
+  @media (max-width: 480px) {
+    .outcomes-grid { grid-template-columns: 1fr; }
+    .proof-metrics { grid-template-columns: 1fr 1fr; }
+    .stat-row { flex-wrap: wrap; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-mesh"></div>
+  <div class="hero-inner">
+    <span class="hero-label">Medical Clinic Growth System · Meteor Media</span>
+    <h1 class="display">Your clinic gets <em>40–60 new</em><br>patients every month.</h1>
+    <p class="hero-sub">Not inquiries. Not website visitors. Actual patients — walking through your door, consulting with your doctors, completing treatment. Here's exactly how that happens.</p>
+
+    <div class="stat-row">
+      <div class="stat">
+        <span class="stat-num">40–60</span>
+        <span class="stat-label">New patients / month</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num">&lt;30s</span>
+        <span class="stat-label">Reply to every inquiry</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num">6mo</span>
+        <span class="stat-label">Auto re-engagement</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num">0</span>
+        <span class="stat-label">Extra work for team</span>
+      </div>
+    </div>
+
+    <div class="pill-row">
+      <div class="pill"><span class="dot"></span> Full appointment book</div>
+      <div class="pill"><span class="dot"></span> Fewer no-shows</div>
+      <div class="pill"><span class="dot"></span> Patients who return</div>
+    </div>
+  </div>
+</section>
+
+<!-- PROOF / SOCIAL PROOF SECTION -->
+<section class="proof-section">
+  <div class="wrapper proof-inner">
+
+    <div class="proof-header reveal">
+      <p class="section-label">Real Results · Verified Outcomes</p>
+      <h2 class="section-title display">Clinics across India are already<br>growing with this system.</h2>
+      <p class="section-sub">Outcome-driven numbers from actual campaigns. No estimates, no projections — what happened.</p>
+    </div>
+
+    <!-- Metrics strip -->
+    <div class="proof-metrics reveal">
+      <div class="proof-metric">
+        <div class="proof-metric-num">₹320</div>
+        <div class="proof-metric-label">Avg. cost per booked patient</div>
+      </div>
+      <div class="proof-metric">
+        <div class="proof-metric-num">10×</div>
+        <div class="proof-metric-label">Average return on ad spend</div>
+      </div>
+      <div class="proof-metric">
+        <div class="proof-metric-num">52</div>
+        <div class="proof-metric-label">Avg. new patients in month 1</div>
+      </div>
+      <div class="proof-metric">
+        <div class="proof-metric-num">94%</div>
+        <div class="proof-metric-label">Inquiry response rate</div>
+      </div>
+    </div>
+
+    <!-- Testimonials -->
+    <div class="testimonials-grid">
+      <div class="testimonial-card reveal">
+        <div class="testimonial-stars">
+          <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+        </div>
+        <p class="testimonial-quote">Pehle hum Practo aur JustDial pe depend karte the. Mahine mein sirf 10–12 naye patients aate the. Pritam ka system lagane ke baad, teen mahine mein average 48 patients per month ho gaya. Aur sabse badi baat — sab kuch automatic hai, staff ko kuch extra nahi karna padta.</p>
+        <div class="testimonial-result">📈 12 → 48 patients/month in 90 days</div>
+        <div class="testimonial-author">
+          <div class="author-avatar">DK</div>
+          <div>
+            <div class="author-name">Dr. Karan Malhotra</div>
+            <div class="author-role">Malhotra Multi-Specialty Clinic · Ahmedabad</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial-card reveal reveal-delay-1">
+        <div class="testimonial-stars">
+          <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+        </div>
+        <p class="testimonial-quote">The instant reply automation changed everything for us. We were losing patients every single day because our receptionist couldn't respond fast enough. Now every inquiry — even at 11 PM — gets a WhatsApp message in seconds. Our appointment show-up rate went from 52% to 86% in just two months.</p>
+        <div class="testimonial-result">🏥 Show-up rate: 52% → 86%</div>
+        <div class="testimonial-author">
+          <div class="author-avatar">DS</div>
+          <div>
+            <div class="author-name">Dr. Sneha Verma</div>
+            <div class="author-role">Verma Health Clinic · Pune</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial-card reveal reveal-delay-2">
+        <div class="testimonial-stars">
+          <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+        </div>
+        <p class="testimonial-quote">Maine socha tha Google Ads sirf bade hospitals ke liye hota hai. Lekin Surat mein humara chhota general clinic hai — phir bhi pehle 6 hafte mein 28 naye patients aaye. Aur Google reviews bhi 11 se 54 ho gaye. Ab organic traffic bhi aa raha hai.</p>
+        <div class="testimonial-result">⭐ Google reviews: 11 → 54 in 6 weeks</div>
+        <div class="testimonial-author">
+          <div class="author-avatar">RP</div>
+          <div>
+            <div class="author-name">Dr. Ramesh Patel</div>
+            <div class="author-role">Patel Family Clinic · Surat</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Trust badges -->
+    <div class="trust-strip reveal">
+      <p class="trust-strip-label">Trusted across India</p>
+      <div class="trust-badges">
+        <div class="trust-badge"><span class="badge-icon">🏥</span> 30+ medical clinics served</div>
+        <div class="trust-badge"><span class="badge-icon">📍</span> Ahmedabad · Pune · Surat · Bengaluru · Hyderabad</div>
+        <div class="trust-badge"><span class="badge-icon">🎯</span> Google Ads specialists since 2022</div>
+        <div class="trust-badge"><span class="badge-icon">🔒</span> 30-day results guarantee</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- PROBLEM -->
+<div class="wrapper">
+  <section class="section">
+    <p class="section-label reveal">Why Clinics Stall</p>
+    <h2 class="section-title display reveal">Revenue leaks at 3 predictable points.</h2>
+    <p class="section-sub reveal">Most clinics have no patient acquisition system. So they lose patients they already paid to attract.</p>
+
+    <div class="problem-grid reveal">
+      <div class="problem-cell trigger">A patient searches for a clinic, finds yours, and fills out a contact form.</div>
+      <div class="problem-cell"><span class="arrow">→</span>No instant reply. They move to the next clinic down the list. <strong>You paid for that click. Your competitor got the patient.</strong></div>
+
+      <div class="problem-cell trigger">A patient books a consultation or OPD appointment.</div>
+      <div class="problem-cell"><span class="arrow">→</span>No reminder goes out. They forget or deprioritise. The slot goes empty. <strong>That's ₹500–₹5,000 lost per empty consultation slot.</strong></div>
+
+      <div class="problem-cell trigger">A patient visits, gets treated, and leaves satisfied.</div>
+      <div class="problem-cell"><span class="arrow">→</span>Six months pass. No follow-up. They go to a different clinic for their next visit. <strong>Lifetime value: gone.</strong></div>
+    </div>
+
+    <p class="problem-note reveal">None of this is your team's fault. It's a systems problem — and it has a straightforward fix.</p>
+  </section>
+</div>
+
+<div class="divider"></div>
+
+<!-- OUTCOMES -->
+<div class="wrapper">
+  <section class="section">
+    <p class="section-label reveal">What You Actually Get</p>
+    <h2 class="section-title display reveal">Outcomes, not features.</h2>
+    <p class="section-sub reveal">Every part of this system is built for one purpose — more revenue and more patients for your clinic.</p>
+
+    <div class="outcomes-grid">
+      <div class="outcome-card reveal">
+        <div class="outcome-num">+50</div>
+        <h4>New patients every month</h4>
+        <p>High-intent patients from Google Ads — people already searching "doctor near me" or "general physician in [city]." These aren't cold audiences. They're ready to book a consultation.</p>
+      </div>
+      <div class="outcome-card reveal reveal-delay-1">
+        <div class="outcome-num">↓ 80%</div>
+        <h4>Drop in lost inquiries</h4>
+        <p>Every form submission and missed call gets a reply in under 30 seconds — automatically. No patient is left waiting and walking away to another clinic.</p>
+      </div>
+      <div class="outcome-card reveal reveal-delay-2">
+        <div class="outcome-num">↓ 60%</div>
+        <h4>Fewer no-shows</h4>
+        <p>Automated reminders with the time, date, and clinic location are sent the day before every appointment. Empty consultation slots become rare.</p>
+      </div>
+      <div class="outcome-card reveal">
+        <div class="outcome-num">2×</div>
+        <h4>Patient lifetime value</h4>
+        <p>A 6-month re-engagement message brings existing patients back for follow-up visits automatically. One consultation becomes an ongoing healthcare relationship.</p>
+      </div>
+      <div class="outcome-card reveal reveal-delay-1">
+        <div class="outcome-num">★★★★★</div>
+        <h4>More Google reviews</h4>
+        <p>After every visit, a polite review request goes out automatically. More 5-star reviews means Google ranks your clinic higher — more patients discover you organically.</p>
+      </div>
+      <div class="outcome-card reveal reveal-delay-2" style="background: #f0f8f6; border-color: #b5d8d2;">
+        <div class="outcome-num" style="color: var(--forest-mid);">100%</div>
+        <h4 style="color: var(--forest);">Pipeline visibility</h4>
+        <p>You always know exactly how many leads came in, how many booked, how many showed up, and how many converted to ongoing treatment or follow-ups.</p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="divider"></div>
+
+<!-- HOW IT WORKS -->
+<div class="wrapper">
+  <section class="section">
+    <div class="steps-bg reveal">
+      <p class="section-label">How It Works</p>
+      <h2 class="section-title display">8 steps. Fully automatic.</h2>
+      <p class="section-sub" style="margin-bottom: 36px;">Once set up, the system runs in the background — no manual work from your team, ever.</p>
+
+      <div class="steps-list">
+        <div class="step">
+          <div class="step-num">01</div>
+          <div class="step-body">
+            <div class="step-result">→ More qualified traffic</div>
+            <div class="step-title">Patient finds your clinic via Google Ads</div>
+            <div class="step-desc">They search 'doctor near me' or 'clinic in [city]' — your ad appears. They click, land on a dedicated page, and fill out a short form.</div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">02</div>
+          <div class="step-body">
+            <div class="step-result">→ No inquiry lost</div>
+            <div class="step-title">Instant reply within seconds</div>
+            <div class="step-desc">"Hi Ravi 👋 Thanks for reaching out. Here's your appointment booking link." No waiting. No competitor gets them first.</div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">03</div>
+          <div class="step-body">
+            <div class="step-result">→ Appointment confirmed</div>
+            <div class="step-title">They book a slot at their convenience</div>
+            <div class="step-desc">A calendar shows available OPD slots (Mon–Sat, 9 AM–7 PM). They pick one. No phone tag, no hold music.</div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">04</div>
+          <div class="step-body">
+            <div class="step-result">→ Full pipeline visibility</div>
+            <div class="step-title">Your team sees everything in one dashboard</div>
+            <div class="step-desc">New → Contacted → Booked → Visited → Treated. You always know exactly where every patient stands.</div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">05</div>
+          <div class="step-body">
+            <div class="step-result">→ Fewer empty slots</div>
+            <div class="step-title">Reminder goes out before the visit</div>
+            <div class="step-desc">Time, date, and clinic location — sent the day before. No-shows drop significantly without any manual effort.</div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">06</div>
+          <div class="step-body">
+            <div class="step-result">→ Better online reputation</div>
+            <div class="step-title">Post-visit review request fires automatically</div>
+            <div class="step-desc">More 5-star reviews = higher Google ranking = more free organic traffic. Compounding, self-sustaining growth.</div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">07</div>
+          <div class="step-body">
+            <div class="step-result">→ Recurring revenue</div>
+            <div class="step-title">6-month re-engagement message goes out</div>
+            <div class="step-desc">"Hi Ravi, time for your follow-up check?" with a booking link. Patients return. Lifetime value doubles.</div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">08</div>
+          <div class="step-body">
+            <div class="step-result">→ Compounding growth</div>
+            <div class="step-title">The cycle repeats — without lifting a finger</div>
+            <div class="step-desc">Every new patient enters the same loop. Every existing patient is followed up. The clinic grows steadily and predictably.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- CTA -->
+<div class="wrapper">
+  <div class="cta-band reveal">
+    <p class="cta-promise">Free 20-minute demo call</p>
+    <h2 class="display">See exactly how many patients<br>your area can deliver.</h2>
+    <p>We'll show you the search volume for your city, a realistic patient projection, and how the full system works — live. No commitment required.</p>
+    <div class="cta-contacts">
+      <a href="https://wa.me/917001225654" class="cta-btn">📱 WhatsApp: 7001225654</a>
+      <a href="mailto:pritamgrows@gmail.com" class="cta-btn outline">✉️ pritamgrows@gmail.com</a>
+    </div>
+    <p class="cta-fine">This document is confidential and prepared exclusively for your clinic · Meteor Media</p>
+  </div>
+</div>
+
+<script>
+  // Intersection observer for scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+  reveals.forEach(el => io.observe(el));
+</script>
+
+</body>
+</html>
